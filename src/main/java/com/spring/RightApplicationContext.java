@@ -18,18 +18,35 @@ public class RightApplicationContext {
         String path = componentScanAnnotation.value();
         System.out.println(path);
 
+        path = path.replace(".","/");
         // 扫描
         // Bootstrap ---> jre/lib
         // Ext ---------> jre/ext/lib
         // App ---------> classpath --->
         ClassLoader classLoader = RightApplicationContext.class.getClassLoader();
-        URL resource = classLoader.getResource("com/right/service");
+        URL resource = classLoader.getResource(path);
         File file = new File(resource.getFile());
         if(file.isDirectory()){
 
             File[] files = file.listFiles();
             for (File f : files) {
-                System.out.println(f);
+                String fileName = f.getAbsolutePath();
+                if(fileName.endsWith(".class")) {
+                    String className = fileName.substring(fileName.indexOf("com"), fileName.indexOf(".class"));
+                    className = className.replace("\\", ".");
+                    System.out.println(className);
+                    
+                    try{
+
+                        Class<?> claZZ = classLoader.loadClass(className);
+                        if(claZZ.isAnnotationPresent(Component.class)){
+
+                        }
+
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
 
